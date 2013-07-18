@@ -7,16 +7,34 @@ module Engine
     # Constructor
     def initialize
       @game_over = false # flag
+      @game_win = false
       
       # init sprite lists
-      [Alien, Bullet, EnergyBar, Explosion, Hud, Ship].each {|x| Game.sprite_collection.init_list(x)}
+      [EnergyBar, Explosion, Hud, Board, Ball, Block].each {|x| Game.sprite_collection.init_list(x)}
       
-      @captain = Ship.new
+      @board = Board.new
       @img_background = Game.images["background"]
       @font_score = Game.fonts["score"]
       
       Hud.new
       EnergyBar.new
+      
+      Edge.new(250, 500, :bottom)
+      Edge.new(250, 0, :top)
+      Edge.new(0, 250, :left)
+      Edge.new(550, 250, :right)
+
+      arr_x = [25, 75, 125, 175, 225, 275, 325, 375, 425, 475, 525]
+      arr_y = [20, 50]
+
+      produce_blocks = arr_x.product(arr_y)
+
+      produce_blocks.each do |arr|
+        Block.new(arr[0], arr[1])
+      end
+
+      @ball = Ball.new
+      @ball.warp(250, 150)
       
       @score = 0
       @energy = MaxEnergy       
@@ -38,10 +56,7 @@ module Engine
     # Updates game entities
     def update
       process_input
-      
-      # spawn enemies
-      Alien.new if rand(100) < 10
-            
+
       # update all sprites
       Game.sprite_collection.update
     end
@@ -54,11 +69,17 @@ module Engine
       when Gosu::KbReturn then Game.game_state = MenuState if game_over?
       end
     end
-    
+
+    def button_down(id)
+      if id == Gosu::KbEscape
+        close
+      end
+    end
+
     # Check the status of some buttons and performs the appropiate actions
     def process_input
-      @captain.move(-Ship::Speed) if Game.instance.button_down?(Gosu::KbLeft) and not game_over?
-      @captain.move(Ship::Speed) if Game.instance.button_down?(Gosu::KbRight) and not game_over?
+      @board.move(-Board::Speed) if Game.instance.button_down?(Gosu::KbLeft) and not game_over?
+      @board.move(Board::Speed) if Game.instance.button_down?(Gosu::KbRight) and not game_over?
     end
     
     # Shows the game over message
@@ -67,22 +88,28 @@ module Engine
       @game_over = true
     end
     
+    def start_game_win
+      @game_over = true
+      raise "YOU WIN !!!"
+    end
+    
     # Returns whether the game is over or not
     def game_over?
       @game_over
     end
-    
+
+    def game_win?
+      @game_win
+    end
+
     # Adds the given value to the player's score
     def increase_score!(x)
       @score += x
     end
-    
-    # Ouch! Decreases the ship's energy and starts the game over if there is no more energy left
-    def decrease_energy
-      @energy -= 1
-      if @energy <= 0
-        Game.sprites[Ship].first.destroy! unless Engine::Game.sprites[Ship].empty?
-        Game.game_state.start_game_over
+
+    def block_exists?
+      if Game.sprites[Block].count.eql? 0 
+        Game.game_state.start_game_win
       end
     end
   end

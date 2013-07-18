@@ -4,7 +4,7 @@ module Engine
   # an array of same-class Sprite objects.
   #
   # In the game, there is one sprite list for each different sprite class, ie
-  # Alien, Bullet, Ship, etc.
+  # Ball, Board etc.
   class SpriteCollection
     
     attr_reader :sprites
@@ -37,11 +37,13 @@ module Engine
         list.reject!{|x| x.die?} # delete all doomed sprites
       end
     end
-    
+
     # Draws all the sprites in the collection
     def draw
-      @sprites.each_value do |list|
-        list.each {|x| x.draw}
+      @visible = @sprites.reject{ |l| l == Edge }
+
+      @visible.each_value do |list|
+        list.each { |x| x.draw }
       end
     end
   end

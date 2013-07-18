@@ -25,7 +25,7 @@ module Engine
       @@start_fade = 0
        
       @@change_game_state = nil
-      @@game_state = MenuState.new
+      @@game_state = PlayState.new
     end
 
     # Returns a hash map with the images collection
@@ -131,6 +131,8 @@ module Engine
     def load_images
       @@images["black"] = Gosu::Image.new(self, "gfx/black.png", true)
       @@images["background"] = Gosu::Image.new(self, "gfx/background.png", true)
+      @@images["board"] = Gosu::Image.new(self, "gfx/board.png", false)
+      @@images["board_long"] = Gosu::Image.new(self, "gfx/board_long.png", false)
       @@images["captain"] = Gosu::Image.new(self, "gfx/captain.png", false)
       @@images["laser"] = Gosu::Image.new(self, "gfx/laser.png", false)
       @@images["alien"] = Gosu::Image.load_tiles(self, "gfx/alien.png", 48, 42, false)
@@ -138,6 +140,7 @@ module Engine
       @@images["energy low"] = Gosu::Image.new(self, "gfx/energy_low.png", false)
       @@images["hud"] = Gosu::Image.new(self, "gfx/hud.png", false)
       @@images["boom"] = Gosu::Image.new(self, "gfx/boom.png", false)
+      @@images["ball"] = Gosu::Image.new(self, "gfx/ball.png", false)
       @@images["gameover"] = Gosu::Image.new(self, "gfx/game_over.png", false)
       @@images["logo"] = Gosu::Image.new(self, "gfx/game_logo.png", false)
       @@images["credits"] = Gosu::Image.new(self, "gfx/credits.png", false)

@@ -10,7 +10,7 @@ module Engine
 
     # Constructor. Note that classes which inherits from this one should
     # call THIS constructor (with super.init) too!
-    def initialize
+    def initialize(x=0, y=0, type=nil)
       @x = 0
       @y = 0
       @z = 0
@@ -56,6 +56,37 @@ module Engine
     # Check collision against another sprite (circle-shaped bounding boxes)
     def collision?(other)
       Gosu::distance(@x, @y, other.x, other.y) < @radius * @size + other.radius * other.size
+    end
+    
+    def collision_block?(other)
+      Gosu::distance(@x, @y, other.x, other.y) < 25
+    end
+
+    def collision_board?(other)
+      #Gosu::distance(@x, @y, other.x, other.y) < @radius * @size + other.radius * other.size
+      
+      @x1 = other.x - other.image.width / 2 
+      @x2 = other.x + other.image.width / 2
+      @y2 = other.y - other.image.height / 2 - self.image.height / 2 
+
+      collision = (@x > @x1 && @x < @x2) && @y > 485
+      collision
+=begin
+
+      x1, y2                  x2,y2
+      ========================
+                x,y
+      ========================
+
+=end
+    end
+
+    def collision_test?(other)
+      if other.bottom? || other.top?
+        Gosu::distance(@x, @y, @x, other.y) < 5
+      else
+        Gosu::distance(@x, @y, other.x, @y) < 5
+      end
     end
     
     protected
